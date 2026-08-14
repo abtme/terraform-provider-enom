@@ -11,7 +11,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/stringplanmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 
-	"gitlab.turnbull.uk/awxgit/terraform-provider-enom/internal/client"
+	"github.com/abtme/terraform-provider-enom/internal/client"
 )
 
 var _ resource.Resource = &DomainNameserversResource{}

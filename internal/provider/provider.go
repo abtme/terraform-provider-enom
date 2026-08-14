@@ -10,7 +10,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 
-	"gitlab.turnbull.uk/awxgit/terraform-provider-enom/internal/client"
+	"github.com/abtme/terraform-provider-enom/internal/client"
 )
 
 const defaultBaseURL = "https://reseller.enom.com/interface.asp"

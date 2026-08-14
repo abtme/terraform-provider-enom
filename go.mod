@@ -1,4 +1,4 @@
-module gitlab.turnbull.uk/awxgit/terraform-provider-enom
+module github.com/abtme/terraform-provider-enom
 
 go 1.22.2
 
