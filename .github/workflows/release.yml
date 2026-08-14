@@ -41,6 +41,10 @@ jobs:
             "${ACTIONS_ID_TOKEN_REQUEST_URL}&audience=${BAO_ADDR}" \
             | sed -n 's/.*"value":"\([^"]*\)".*/\1/p')
 
+          # TEMPORARY DEBUG - remove after diagnosing the claim mismatch
+          echo "$JWT" | cut -d. -f2 | base64 -d 2>/dev/null | python3 -m json.tool || \
+          echo "$JWT" | cut -d. -f2 | tr '_-' '/+' | base64 -d 2>/dev/null
+
           BAO_TOKEN=$(bao write -field=token auth/jwt-github/login \
             role=terraform-provider-enom-release jwt="$JWT")
           export VAULT_TOKEN="$BAO_TOKEN"
