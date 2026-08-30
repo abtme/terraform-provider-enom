@@ -6,6 +6,7 @@ import (
 	"io"
 	"net/http"
 	"net/url"
+	"os"
 	"strings"
 	"time"
 )
@@ -67,19 +68,44 @@ func (c *Client) authParams() url.Values {
 	return params
 }
 
+// debugHTTP reports whether ENOM_DEBUG_HTTP is set, enabling verbose
+// request/response logging to stderr. The password is always redacted.
+func debugHTTP() bool {
+	return os.Getenv("ENOM_DEBUG_HTTP") != ""
+}
+
+func (c *Client) redact(s string) string {
+	if c.PW == "" {
+		return s
+	}
+	return strings.ReplaceAll(s, c.PW, "[redacted]")
+}
+
 // doRequest performs a GET request to the eNom API and decodes the XML response.
 func (c *Client) doRequest(params url.Values) (*interfaceResponse, error) {
 	reqURL := c.BaseURL + "?" + params.Encode()
+	if debugHTTP() {
+		fmt.Fprintf(os.Stderr, "ENOM_DEBUG_HTTP: GET %s\n", c.redact(reqURL))
+	}
 
 	resp, err := c.HTTPClient.Get(reqURL)
 	if err != nil {
+		if debugHTTP() {
+			fmt.Fprintf(os.Stderr, "ENOM_DEBUG_HTTP: request failed: %v\n", err)
+		}
 		return nil, fmt.Errorf("request failed: %w", err)
 	}
 	defer resp.Body.Close()
+	if debugHTTP() {
+		fmt.Fprintf(os.Stderr, "ENOM_DEBUG_HTTP: response status=%s\n", resp.Status)
+	}
 
 	body, err := io.ReadAll(resp.Body)
 	if err != nil {
 		return nil, fmt.Errorf("reading response: %w", err)
+	}
+	if debugHTTP() {
+		fmt.Fprintf(os.Stderr, "ENOM_DEBUG_HTTP: response body=%q\n", c.redact(string(body)))
 	}
 
 	var result interfaceResponse
